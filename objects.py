@@ -4,6 +4,10 @@ import math
 PLAYER_WIDTH = 55
 PLAYER_HEIGHT = 55
 
+BULLET_WIDTH = 10
+BULLET_HEIGHT = 5
+BULLET_SPEED = 5
+
 
 class Player:
     def __init__(self, x, y):
@@ -22,4 +26,18 @@ class Player:
         rotated_img = pg.transform.rotate(self.img, -self.angle)  # Rotate the image
         rect = rotated_img.get_rect(center=(self.x, self.y))
         window.blit(rotated_img, rect.topleft)
+
+class Bullet:
+    def __init__(self, x, y, player_angle):
+        self.x = x
+        self.y = y
+        self.img = pg.transform.scale(pg.image.load('Assets/Images/laser_projectile.png'), (BULLET_WIDTH, BULLET_HEIGHT))
+        self.angle = player_angle
+
+    def move(self):
+        # Calculate the movement based on the angle
+        self.x += BULLET_SPEED
+
+    def draw(self, window):
+        window.blit(self.img, (self.x, self.y))
 
