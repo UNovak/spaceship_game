@@ -8,6 +8,7 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Aliens game")
 
 # variables
+FPS = 60
 WHITE = (255, 255, 255)
 BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
 
@@ -21,8 +22,10 @@ def draw(player, mouse_x, mouse_y):
 
 def main():
     run = True
+    clock = pygame.time.Clock()
     player = Player(WIDTH / 2, HEIGHT / 2)
     while run:
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
