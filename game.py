@@ -9,10 +9,11 @@ pygame.display.set_caption("Aliens game")
 
 # variables
 WHITE = (255, 255, 255)
+BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
 
 
 def draw(player, mouse_x, mouse_y):
-    WIN.fill(WHITE)
+    WIN.blit(BACKGROUND, (0, 0))
     player.update_angle(mouse_x, mouse_y)
     player.draw(WIN)
     pygame.display.update()
