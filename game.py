@@ -1,11 +1,18 @@
 import pygame
 from objects import Player, Bullet
 
+# TODO:
+# - look into sprites
+# - top down game design
+# - enemies
+# - bullets to mouse position instead of horizontally
+
 pygame.init()
 
 WIDTH, HEIGHT = 800, 400
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Aliens game")
+# pygame.display.set_icon
 
 # variables
 FPS = 60
@@ -34,19 +41,19 @@ def main():
     bullets = []
     while run:
         clock.tick(FPS)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 pygame.quit()
 
-            if event.type == pygame.MOUSEBUTTONUP  or event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)
                 if mouse[0]:
-                    bullets.append(Bullet(WIDTH / 2, HEIGHT/2, player.angle))
+                    bullets.append(Bullet(player))
 
-        # Get mouse position
+        # update mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
-
         # update player
         draw(player, mouse_x, mouse_y, bullets)
 

@@ -9,8 +9,9 @@ BULLET_HEIGHT = 5
 BULLET_SPEED = 5
 
 
-class Player:
+class Player(pg.sprite.Sprite):
     def __init__(self, x, y):
+        pg.sprite.Sprite.__init__(self)
         self.x = x
         self.y = y
         self.img = pg.transform.scale(pg.image.load('Assets/Images/player_ship.png'), (PLAYER_WIDTH, PLAYER_HEIGHT))
@@ -27,17 +28,20 @@ class Player:
         rect = rotated_img.get_rect(center=(self.x, self.y))
         window.blit(rotated_img, rect.topleft)
 
-class Bullet:
-    def __init__(self, x, y, player_angle):
-        self.x = x
-        self.y = y
+
+class Bullet(pg.sprite.Sprite):
+    def __init__(self, player):
+        pg.sprite.Sprite.__init__(self)
+        self.x = player.x
+        self.y = player.y
         self.img = pg.transform.scale(pg.image.load('Assets/Images/laser_projectile.png'), (BULLET_WIDTH, BULLET_HEIGHT))
-        self.angle = player_angle
+        self.angle = player.angle
 
     def move(self):
-        # Calculate the movement based on the angle
-        self.x += BULLET_SPEED
+        self.x += math.cos(math.radians(self.angle - 90)) * BULLET_SPEED
+        self.y += math.sin(math.radians(self.angle - 90)) * BULLET_SPEED
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
+
 
