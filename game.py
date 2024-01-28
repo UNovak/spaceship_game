@@ -3,9 +3,7 @@ from objects import Player, Bullet
 
 # TODO:
 # - look into sprites
-# - top down game design
 # - enemies
-# - bullets to mouse position instead of horizontally
 
 pygame.init()
 
@@ -22,7 +20,13 @@ BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.
 
 def handle_bullets(bullets):
     for bullet in bullets:
+
+        # check if bullet is off the screen
+        if bullet.x <= 0 or bullet.x >= WIDTH or bullet.y <= 0 or bullet.y >= HEIGHT:
+            bullets.remove(bullet)
+
         bullet.move()
+        print(bullets)
         bullet.draw(WIN)
 
 
