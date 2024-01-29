@@ -27,7 +27,7 @@ BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.
 def handle_bullets(bullets):
     for bullet in bullets:
         # check if bullet is off the screen
-        if bullet.x <= 0 or bullet.x >= WIDTH or bullet.y <= 0 or bullet.y >= HEIGHT:
+        if bullet.rect.x <= 0 or bullet.rect.x >= WIDTH or bullet.rect.y <= 0 or bullet.rect.y >= HEIGHT:
             bullet.kill()
 
         bullet.move()
@@ -58,7 +58,7 @@ def update_score(player):
     WIN.blit(text, (text_x, text_y))
 
 
-def check_collisions(bullets, aliens, player, lives):
+def check_collisions(bullets, aliens, player):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):  # if bullets and aliens collide remove them
         player.score += 1  # increment score if player scores a hit
     for alien in aliens:
@@ -82,7 +82,7 @@ def draw(player, mouse_x, mouse_y, bullets, aliens, lives):
         player.draw(WIN)  # draw player
         handle_aliens(aliens)  # move aliens
         handle_bullets(bullets)  # move bullets
-        check_collisions(bullets, aliens, player, lives)  # check for all collisions
+        check_collisions(bullets, aliens, player)  # check for all collisions
         handle_lives(player, lives)
         update_score(player)  # update text
         pygame.display.update()  # update display
@@ -122,6 +122,7 @@ def main():
     lives = []
     spawn_timer = 0
     difficulty = 1
+    max_bullet = 6
     run = True
 
     while run:
@@ -138,7 +139,7 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
-                if mouse[0]:  # check if left mouse button\
+                if mouse[0] and len(bullets.sprites()) < max_bullet:  # check if left mouse button\
                     # noinspection PyTypeChecker
                     bullets.add(Bullet(player))
 
