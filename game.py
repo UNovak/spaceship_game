@@ -1,9 +1,21 @@
 import pygame
-from objects import Player, Bullet
+from objects import Player, Bullet, Alien
 
 # TODO:
-# - look into sprites
-# - enemies
+#
+# - collision detection player - alien
+# - fix alien movement
+# - score counter
+# - end game condition
+# - creating multiple enemies
+# - window icon
+# - restart button
+# - hit animation
+# - increasing difficulty
+# - adjusting speed variables
+# - add sounds
+# - limit shooting speed and amount of bullets
+#
 
 pygame.init()
 
@@ -23,18 +35,33 @@ def handle_bullets(bullets):
 
         # check if bullet is off the screen
         if bullet.x <= 0 or bullet.x >= WIDTH or bullet.y <= 0 or bullet.y >= HEIGHT:
-            bullets.remove(bullet)
+            bullet.kill()
 
         bullet.move()
-        print(bullets)
         bullet.draw(WIN)
 
 
-def draw(player, mouse_x, mouse_y, bullets):
+def handle_aliens(aliens):
+    for alien in aliens:
+        alien.move()
+        alien.draw(WIN)
+
+
+def check_collisions(bullets, aliens, player):
+    pygame.sprite.groupcollide(bullets, aliens, True, True)  # if bullets and aliens collide remove them
+    for alien in aliens:
+        if pygame.sprite.collide_rect(player, alien):
+            aliens.remove(alien)
+            print("you lost")
+
+
+def draw(player, mouse_x, mouse_y, bullets, aliens):
     WIN.blit(BACKGROUND, (0, 0))
     player.update_angle(mouse_x, mouse_y)
     player.draw(WIN)
+    handle_aliens(aliens)
     handle_bullets(bullets)
+    check_collisions(bullets, aliens, player)
     pygame.display.update()
 
 
@@ -42,7 +69,11 @@ def main():
     run = True
     clock = pygame.time.Clock()
     player = Player(WIDTH / 2, HEIGHT / 2)
-    bullets = []
+    bullets = pygame.sprite.Group()
+    aliens = pygame.sprite.Group()
+    spawn_timer = 0
+    difficulty = 1
+
     while run:
         clock.tick(FPS)
 
@@ -52,14 +83,22 @@ def main():
                 pygame.quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mouse = pygame.mouse.get_pressed(3)
-                if mouse[0]:
-                    bullets.append(Bullet(player))
+                mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
+                if mouse[0]:  # check if left mouse button\
+                    # noinspection PyTypeChecker
+                    bullets.add(Bullet(player))
+
+        # alien creation
+        spawn_timer += clock.get_rawtime() / 250
+        if spawn_timer >= difficulty:
+            # noinspection PyTypeChecker
+            aliens.add(Alien(WIDTH, HEIGHT))
+            spawn_timer = 0
 
         # update mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()
         # update player
-        draw(player, mouse_x, mouse_y, bullets)
+        draw(player, mouse_x, mouse_y, bullets, aliens)
 
 
 if __name__ == "__main__":
