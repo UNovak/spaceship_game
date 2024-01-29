@@ -16,6 +16,9 @@ BULLET_WIDTH = 10
 BULLET_HEIGHT = 5
 BULLET_SPEED = 5
 
+# icon size
+LIVE_SIZE = (20, 20)
+
 
 class Player(pg.sprite.Sprite):
     def __init__(self, x, y):
@@ -86,3 +89,15 @@ class Alien(pg.sprite.Sprite):
     def draw(self, window):
         self.rect = self.img.get_rect(center=(self.x, self.y))
         window.blit(self.img, self.rect.topleft)
+
+
+class Live:
+    def __init__(self, x, y):
+        (self.width, self.height) = LIVE_SIZE
+        self.x = x
+        self.y = y
+        self.img = pg.transform.scale(pg.image.load('Assets/Images/life_icon.png'), LIVE_SIZE)
+
+    def draw(self, window):
+        window.blit(self.img, (self.x, self.y))
+
