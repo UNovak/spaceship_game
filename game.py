@@ -3,9 +3,6 @@ from objects import Player, Bullet, Alien
 
 # TODO:
 #
-# - collision detection player - alien
-# - fix alien movement
-# - score counter
 # - end game condition
 # - creating multiple enemies
 # - window icon
@@ -48,8 +45,7 @@ def handle_aliens(aliens):
         alien.draw(WIN)
 
 
-def update_text(player):
-
+def update_score(player):
     font = pygame.font.SysFont('sfnsmono', 20)
     text = font.render('Score: ' + str(player.score), True, WHITE)
     text_x = WIDTH - text.get_width() - 10
@@ -63,27 +59,55 @@ def check_collisions(bullets, aliens, player,):
     for alien in aliens:
         if pygame.sprite.collide_rect(player, alien):
             aliens.remove(alien)
+            player.isAlive = False
 
 
 def draw(player, mouse_x, mouse_y, bullets, aliens):
+
+    if not player.isAlive:
+        game_over(player)
+
+    else:
+        WIN.blit(BACKGROUND, (0, 0))  # draw background
+        player.update_angle(mouse_x, mouse_y)  # get latest mouse coordinates
+        player.draw(WIN)  # draw player
+        handle_aliens(aliens)
+        handle_bullets(bullets)
+        check_collisions(bullets, aliens, player)
+        update_score(player)
+        pygame.display.update()
+
+
+def game_over(player):
     WIN.blit(BACKGROUND, (0, 0))
-    player.update_angle(mouse_x, mouse_y)
-    player.draw(WIN)
-    handle_aliens(aliens)
-    handle_bullets(bullets)
-    check_collisions(bullets, aliens, player)
-    update_text(player)
+    font1 = pygame.font.SysFont('sfnsmono', 40)
+    text1 = font1.render('GAME OVER!', True, WHITE)
+    text1_x = WIDTH / 2 - text1.get_width() / 2
+    text1_y = HEIGHT / 2 - text1.get_height() / 2 - WIDTH/10
+    WIN.blit(text1, (text1_x, text1_y))
+
+    font2 = pygame.font.SysFont('sfnsmono', 20)
+    text2 = font2.render('Your score: ' + str(player.score), True, WHITE)
+    text2_x = WIDTH/2 - text2.get_width()/2
+    text2_y = text1_y + text2.get_height() + text1.get_height() / 2
+    WIN.blit(text2, (text2_x, text2_y))
+
+    font3 = pygame.font.SysFont('sfnsmono', 20, bold=pygame.font.Font.bold)
+    text3 = font2.render('Press SPACE to play again', True, WHITE)
+    text3_x = WIDTH/2 - text3.get_width()/2
+    text3_y = HEIGHT - text3.get_height() - 30
+    WIN.blit(text3, (text3_x, text3_y))
     pygame.display.update()
 
 
 def main():
-    run = True
     clock = pygame.time.Clock()
     player = Player(WIDTH / 2, HEIGHT / 2)
     bullets = pygame.sprite.Group()
     aliens = pygame.sprite.Group()
     spawn_timer = 0
     difficulty = 1
+    run = True
 
     while run:
         clock.tick(FPS)
@@ -110,6 +134,7 @@ def main():
         mouse_x, mouse_y = pygame.mouse.get_pos()
         # update player
         draw(player, mouse_x, mouse_y, bullets, aliens)
+
 
 
 if __name__ == "__main__":
