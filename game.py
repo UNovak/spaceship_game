@@ -42,9 +42,9 @@ def handle_aliens(aliens):
 
 def handle_lives(player, lives):
     lives.clear()  # empty the list from previous iteration
-    x = WIDTH - LIVE_SIZE[0] - 2
+    x = WIDTH - LIVE_SIZE[0] - 10
     for i in range(player.lives):
-        lives.append(Live(x, 5))
+        lives.append(Live(x, 10))
         x -= LIVE_SIZE[0] + 2  # add 2 tyo width for space between icons
         lives[i].draw(WIN)  # call draw method of just created icon
 
@@ -123,10 +123,13 @@ def main():
     spawn_timer = 0
     difficulty = 1
     max_bullet = 6
+    bullet_timer = 0
     run = True
 
     while run:
         clock.tick(FPS)
+
+        bullet_timer += clock.get_rawtime() / 1000
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -139,9 +142,11 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
-                if mouse[0] and len(bullets.sprites()) < max_bullet:  # check if left mouse button\
+                if mouse[0] and len(bullets.sprites()) < max_bullet and bullet_timer >= 0.05:  # check if left mouse button\
                     # noinspection PyTypeChecker
                     bullets.add(Bullet(player))
+                    bullet_timer = 0
+
 
         # alien creation
         spawn_timer += clock.get_rawtime() / 750
