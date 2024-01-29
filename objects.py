@@ -26,6 +26,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.img.get_rect(center=(self.x, self.y))
         self.angle = 0
         self.score = 0
+        self.isAlive = True
 
     def update_angle(self, mouse_x, mouse_y):
         # Calculate the angle in radians

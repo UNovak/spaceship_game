@@ -1,9 +1,10 @@
 import pygame
+import math
 from objects import Player, Bullet, Alien
 
 # TODO:
 #
-# - end game condition
+# - player lives
 # - creating multiple enemies
 # - window icon
 # - restart button
@@ -15,7 +16,6 @@ from objects import Player, Bullet, Alien
 #
 
 pygame.init()
-pygame.font.init()
 
 WIDTH, HEIGHT = 800, 400
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -28,9 +28,9 @@ WHITE = (255, 255, 255)
 BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
 
 
+# bullet movement and termination on hitting screen edge
 def handle_bullets(bullets):
     for bullet in bullets:
-
         # check if bullet is off the screen
         if bullet.x <= 0 or bullet.x >= WIDTH or bullet.y <= 0 or bullet.y >= HEIGHT:
             bullet.kill()
@@ -45,6 +45,7 @@ def handle_aliens(aliens):
         alien.draw(WIN)
 
 
+# displaying text during live game
 def update_score(player):
     font = pygame.font.SysFont('sfnsmono', 20)
     text = font.render('Score: ' + str(player.score), True, WHITE)
@@ -55,43 +56,50 @@ def update_score(player):
 
 def check_collisions(bullets, aliens, player,):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):  # if bullets and aliens collide remove them
-        player.score += 1
+        player.score += 1  # increment score if player scores a hit
     for alien in aliens:
+        # look through all aliens if they are touching the player
         if pygame.sprite.collide_rect(player, alien):
-            aliens.remove(alien)
+            aliens.remove(alien)  # remove alien if it touches player
             player.isAlive = False
 
 
 def draw(player, mouse_x, mouse_y, bullets, aliens):
 
+    # display end screen when player dies
     if not player.isAlive:
         game_over(player)
 
+    # draw game if player.isAlive == True
     else:
         WIN.blit(BACKGROUND, (0, 0))  # draw background
         player.update_angle(mouse_x, mouse_y)  # get latest mouse coordinates
         player.draw(WIN)  # draw player
-        handle_aliens(aliens)
-        handle_bullets(bullets)
-        check_collisions(bullets, aliens, player)
-        update_score(player)
-        pygame.display.update()
+        handle_aliens(aliens)  # move aliens
+        handle_bullets(bullets)  # move bullets
+        check_collisions(bullets, aliens, player)  # check for all collisions
+        update_score(player)  # update text
+        pygame.display.update()  # update display
 
 
 def game_over(player):
-    WIN.blit(BACKGROUND, (0, 0))
+    WIN.blit(BACKGROUND, (0, 0))  # new background
+
+    # GAME OVER
     font1 = pygame.font.SysFont('sfnsmono', 40)
     text1 = font1.render('GAME OVER!', True, WHITE)
     text1_x = WIDTH / 2 - text1.get_width() / 2
     text1_y = HEIGHT / 2 - text1.get_height() / 2 - WIDTH/10
     WIN.blit(text1, (text1_x, text1_y))
 
+    # score: 0
     font2 = pygame.font.SysFont('sfnsmono', 20)
     text2 = font2.render('Your score: ' + str(player.score), True, WHITE)
     text2_x = WIDTH/2 - text2.get_width()/2
     text2_y = text1_y + text2.get_height() + text1.get_height() / 2
     WIN.blit(text2, (text2_x, text2_y))
 
+    # restart instruction
     font3 = pygame.font.SysFont('sfnsmono', 20, bold=pygame.font.Font.bold)
     text3 = font2.render('Press SPACE to play again', True, WHITE)
     text3_x = WIDTH/2 - text3.get_width()/2
@@ -117,6 +125,10 @@ def main():
                 run = False
                 pygame.quit()
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and not player.isAlive:
+                    main()
+
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
                 if mouse[0]:  # check if left mouse button\
@@ -124,7 +136,8 @@ def main():
                     bullets.add(Bullet(player))
 
         # alien creation
-        spawn_timer += clock.get_rawtime() / 250
+        spawn_timer += clock.get_rawtime() / 750
+        difficulty -= 0.0001
         if spawn_timer >= difficulty:
             # noinspection PyTypeChecker
             aliens.add(Alien(WIDTH, HEIGHT))  # spawn a new alien
