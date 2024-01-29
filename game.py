@@ -1,6 +1,6 @@
 import pygame
 import math
-from objects import Player, Bullet, Alien, Live, LIVE_SIZE
+from objects import *
 
 # TODO:
 #
@@ -12,7 +12,7 @@ from objects import Player, Bullet, Alien, Live, LIVE_SIZE
 
 pygame.init()
 
-WIDTH, HEIGHT = 800, 400
+WIDTH, HEIGHT = 800, 800
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Aliens game")
 # pygame.display.set_icon
@@ -21,6 +21,7 @@ pygame.display.set_caption("Aliens game")
 FPS = 60
 WHITE = (255, 255, 255)
 BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
+MAX_BULLETS = 7
 
 
 # bullet movement and termination on hitting screen edge
@@ -47,6 +48,17 @@ def handle_lives(player, lives):
         lives.append(Live(x, 10))
         x -= LIVE_SIZE[0] + 2  # add 2 tyo width for space between icons
         lives[i].draw(WIN)  # call draw method of just created icon
+
+
+def handle_ammo(bullets):
+    # create bullets
+    ammo = []
+    ammo_amount = MAX_BULLETS - len(bullets.sprites())
+    x = WIDTH/2 + (AMMO_SIZE[0] * ammo_amount) / 2 + 10
+    for i in range(ammo_amount):
+        ammo.append(Ammo(x, HEIGHT-AMMO_SIZE[1] - 10))
+        x -= AMMO_SIZE[0] + 5
+        ammo[i].draw(WIN)
 
 
 # displaying text during live game
@@ -83,6 +95,7 @@ def draw(player, mouse_x, mouse_y, bullets, aliens, lives):
         handle_aliens(aliens)  # move aliens
         handle_bullets(bullets)  # move bullets
         check_collisions(bullets, aliens, player)  # check for all collisions
+        handle_ammo(bullets)
         handle_lives(player, lives)
         update_score(player)  # update text
         pygame.display.update()  # update display
@@ -120,9 +133,9 @@ def main():
     bullets = pygame.sprite.Group()
     aliens = pygame.sprite.Group()
     lives = []
+    ammo = []
     spawn_timer = 0
     difficulty = 1
-    max_bullet = 6
     bullet_timer = 0
     run = True
 
@@ -142,10 +155,10 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
-                if mouse[0] and len(bullets.sprites()) < max_bullet and bullet_timer >= 0.05:  # check if left mouse button\
+                if mouse[0] and len(bullets.sprites()) < MAX_BULLETS and bullet_timer >= 0.05:  # check if left mouse button\
                     # noinspection PyTypeChecker
-                    bullets.add(Bullet(player))
-                    bullet_timer = 0
+                    bullets.add(Bullet(player))  # create a new bullet
+                    bullet_timer = 0  # reset timer
 
 
         # alien creation

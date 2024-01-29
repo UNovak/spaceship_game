@@ -14,10 +14,11 @@ ALIEN_SPEED = 1.5
 # bullet variables
 BULLET_WIDTH = 10
 BULLET_HEIGHT = 5
-BULLET_SPEED = 5
+BULLET_SPEED = 6
 
 # icon size
 LIVE_SIZE = (20, 20)
+AMMO_SIZE = (10, 20)
 
 
 class Player(pg.sprite.Sprite):
@@ -97,6 +98,16 @@ class Live:
         self.x = x
         self.y = y
         self.img = pg.transform.scale(pg.image.load('Assets/Images/life_icon.png'), LIVE_SIZE)
+
+    def draw(self, window):
+        window.blit(self.img, (self.x, self.y))
+
+
+class Ammo:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.img = pg.transform.scale(pg.image.load('Assets/Images/laser_projectile.png'), AMMO_SIZE)
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
