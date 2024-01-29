@@ -77,8 +77,9 @@ class Alien(pg.sprite.Sprite):
         self.rect = self.img.get_rect(center=(self.x, self.y))  # create a rectangle around the image
 
     def move(self):
-        self.rect.x -= math.cos(math.radians(self.angle)) * ALIEN_SPEED
-        self.rect.y -= math.sin(math.radians(self.angle)) * ALIEN_SPEED
+        self.x -= math.cos(math.radians(self.angle)) * ALIEN_SPEED
+        self.y -= math.sin(math.radians(self.angle)) * ALIEN_SPEED
 
     def draw(self, window):
+        self.rect = self.img.get_rect(center=(self.x, self.y))
         window.blit(self.img, self.rect.topleft)
