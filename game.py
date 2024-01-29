@@ -18,6 +18,7 @@ from objects import Player, Bullet, Alien
 #
 
 pygame.init()
+pygame.font.init()
 
 WIDTH, HEIGHT = 800, 400
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -47,12 +48,21 @@ def handle_aliens(aliens):
         alien.draw(WIN)
 
 
-def check_collisions(bullets, aliens, player):
-    pygame.sprite.groupcollide(bullets, aliens, True, True)  # if bullets and aliens collide remove them
+def update_text(player):
+
+    font = pygame.font.SysFont('sfnsmono', 20)
+    text = font.render('Score: ' + str(player.score), True, WHITE)
+    text_x = WIDTH - text.get_width() - 10
+    text_y = HEIGHT - text.get_height() - 10
+    WIN.blit(text, (text_x, text_y))
+
+
+def check_collisions(bullets, aliens, player,):
+    if pygame.sprite.groupcollide(bullets, aliens, True, True):  # if bullets and aliens collide remove them
+        player.score += 1
     for alien in aliens:
         if pygame.sprite.collide_rect(player, alien):
             aliens.remove(alien)
-            print("you lost")
 
 
 def draw(player, mouse_x, mouse_y, bullets, aliens):
@@ -62,6 +72,7 @@ def draw(player, mouse_x, mouse_y, bullets, aliens):
     handle_aliens(aliens)
     handle_bullets(bullets)
     check_collisions(bullets, aliens, player)
+    update_text(player)
     pygame.display.update()
 
 
@@ -92,8 +103,8 @@ def main():
         spawn_timer += clock.get_rawtime() / 250
         if spawn_timer >= difficulty:
             # noinspection PyTypeChecker
-            aliens.add(Alien(WIDTH, HEIGHT))
-            spawn_timer = 0
+            aliens.add(Alien(WIDTH, HEIGHT))  # spawn a new alien
+            spawn_timer = 0  # reset timer
 
         # update mouse position
         mouse_x, mouse_y = pygame.mouse.get_pos()

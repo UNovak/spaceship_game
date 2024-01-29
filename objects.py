@@ -25,6 +25,7 @@ class Player(pg.sprite.Sprite):
         self.img = pg.transform.scale(pg.image.load('Assets/Images/player_ship.png'), (PLAYER_WIDTH, PLAYER_HEIGHT))
         self.rect = self.img.get_rect(center=(self.x, self.y))
         self.angle = 0
+        self.score = 0
 
     def update_angle(self, mouse_x, mouse_y):
         # Calculate the angle in radians
