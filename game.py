@@ -61,7 +61,9 @@ def check_collisions(bullets, aliens, player,):
         # look through all aliens if they are touching the player
         if pygame.sprite.collide_rect(player, alien):
             aliens.remove(alien)  # remove alien if it touches player
-            player.isAlive = False
+            player.lives -= 1
+            if player.lives <= 0:
+                player.isAlive = False
 
 
 def draw(player, mouse_x, mouse_y, bullets, aliens):

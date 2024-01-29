@@ -27,6 +27,7 @@ class Player(pg.sprite.Sprite):
         self.angle = 0
         self.score = 0
         self.isAlive = True
+        self.lives = 5
 
     def update_angle(self, mouse_x, mouse_y):
         # Calculate the angle in radians
