@@ -6,14 +6,12 @@ from objects import *
 # - window icon
 # - hit animation
 # - add sounds
-# - start screen
 #
 
 # BUGS:
 #
 # - alien player collision accuracy
 # - player diagonal movement speed
-# - disable player movement past screen edge
 #
 
 pygame.init()
@@ -70,13 +68,13 @@ def handle_ammo(bullets):
 
 def player_move(player, pressed_keys):
     # adjust player position
-    if pressed_keys[pg.K_w]:  # up
+    if pressed_keys[pg.K_w] and (player.rect.y - PLAYER_SPEED) >= PLAYER_HEIGHT/2:  # up
         player.y -= PLAYER_SPEED
-    if pressed_keys[pg.K_s]:  # down
+    if pressed_keys[pg.K_s] and (player.rect.y + PLAYER_SPEED) <= HEIGHT - PLAYER_HEIGHT/2:  # down
         player.y += PLAYER_SPEED
-    if pressed_keys[pg.K_a]:  # left
+    if pressed_keys[pg.K_a] and (player.rect.x - PLAYER_SPEED) >= PLAYER_WIDTH/2:  # left
         player.x -= PLAYER_SPEED
-    if pressed_keys[pg.K_d]:  # right
+    if pressed_keys[pg.K_d] and (player.rect.x + PLAYER_SPEED) <= WIDTH - PLAYER_WIDTH/2:  # right
         player.x += PLAYER_SPEED
 
     # function to update sync rect and player coordinates
@@ -100,7 +98,7 @@ def check_collisions(bullets, aliens, player):
         if pygame.sprite.collide_rect(player, alien):
             aliens.remove(alien)  # remove alien if it touches player
             player.lives -= 1  # player loses one life
-            if player.lives <= 0: # end game if player lost all lives
+            if player.lives <= 0:  # end game if player lost all lives
                 player.isAlive = False
 
 
