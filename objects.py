@@ -10,7 +10,7 @@ PLAYER_SPEED = 3
 # alien variables
 ALIEN_WIDTH = 30
 ALIEN_HEIGHT = 30
-ALIEN_SPEED = 3.1
+ALIEN_SPEED = 3
 
 # bullet variables
 BULLET_WIDTH = 10
@@ -55,6 +55,7 @@ class Player(pg.sprite.Sprite):
 class Bullet(pg.sprite.Sprite):
     def __init__(self, player):
         super().__init__()
+        # bullet comes form the center of player
         self.x = player.x
         self.y = player.y
         self.img = pg.transform.scale(pg.image.load('Assets/Images/laser_projectile.png'), (BULLET_WIDTH, BULLET_HEIGHT))
@@ -70,7 +71,7 @@ class Bullet(pg.sprite.Sprite):
 
 
 class Alien(pg.sprite.Sprite):
-    def __init__(self, width, height):
+    def __init__(self, width, height, player):
         super().__init__()
 
         # generate random distance
@@ -90,9 +91,20 @@ class Alien(pg.sprite.Sprite):
         self.img = pg.transform.scale(pg.image.load('Assets/Images/enemy_ship.png'), (ALIEN_WIDTH, ALIEN_HEIGHT))
         self.rect = self.img.get_rect(center=(self.x, self.y))  # create a rectangle around the image
 
-    def move(self):
-        self.x -= math.cos(math.radians(self.angle)) * ALIEN_SPEED
-        self.y -= math.sin(math.radians(self.angle)) * ALIEN_SPEED
+    def move(self, player):
+
+        # Find direction vector (dx, dy) between alien and player.
+        dx = player.rect.x - self.x
+        dy = player.rect.y - self.y
+        dist = math.sqrt(dx * dx + dy * dy)
+
+        # Normalize.
+        dx = dx / dist
+        dy = dy / dist
+
+        # Move along this normalized vector towards the player at alien speed
+        self.x += dx * ALIEN_SPEED
+        self.y += dy * ALIEN_SPEED
 
     def draw(self, window):
         self.rect = self.img.get_rect(center=(self.x, self.y))

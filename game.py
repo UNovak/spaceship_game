@@ -1,5 +1,4 @@
 import pygame
-import math
 from objects import *
 
 # TODO:
@@ -36,9 +35,9 @@ def handle_bullets(bullets):
         bullet.draw(WIN)
 
 
-def handle_aliens(aliens):
+def handle_aliens(aliens, player):
     for alien in aliens:
-        alien.move()
+        alien.move(player)
         alien.draw(WIN)
 
 
@@ -108,7 +107,7 @@ def draw(player, mouse_x, mouse_y, bullets, aliens, lives):
         WIN.blit(BACKGROUND, (0, 0))  # draw background
         player.update_angle(mouse_x, mouse_y)  # get latest mouse coordinates
         player.draw(WIN)  # draw player
-        handle_aliens(aliens)  # move aliens
+        handle_aliens(aliens, player)  # move aliens
         handle_bullets(bullets)  # move bullets
         check_collisions(bullets, aliens, player)  # check for all collisions
         handle_ammo(bullets)
@@ -199,7 +198,7 @@ def main():
         difficulty -= DIFFICULTY_SCALING
         if spawn_timer >= difficulty:
             # noinspection PyTypeChecker
-            aliens.add(Alien(WIDTH, HEIGHT))  # spawn a new alien
+            aliens.add(Alien(WIDTH, HEIGHT, player))  # spawn a new alien
             spawn_timer = 0  # reset timer
 
         # update mouse position
