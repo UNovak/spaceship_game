@@ -91,6 +91,13 @@ class Alien(pg.sprite.Sprite):
         self.img = pg.transform.scale(pg.image.load('Assets/Images/enemy_ship.png'), (ALIEN_WIDTH, ALIEN_HEIGHT))
         self.rect = self.img.get_rect(center=(self.x, self.y))  # create a rectangle around the image
 
+    def update_angle(self, player):
+
+        # Calculate the angle in radians
+        angle_rad = math.atan2(player.rect.y - self.y, player.rect.x - self.x)
+        # Convert the angle to degrees and adjust for the Pygame coordinate system
+        self.angle = math.degrees(angle_rad) - 90
+
     def move(self, player):
 
         # Find direction vector (dx, dy) between alien and player.
@@ -107,11 +114,12 @@ class Alien(pg.sprite.Sprite):
         self.y += dy * ALIEN_SPEED
 
     def draw(self, window):
-        self.rect = self.img.get_rect(center=(self.x, self.y))
-        window.blit(self.img, self.rect.topleft)
+        rotated_img = pg.transform.rotate(self.img, -self.angle)  # Rotate the image
+        self.rect = rotated_img.get_rect(center=(self.x, self.y))
+        window.blit(rotated_img, self.rect.topleft)
 
 
-class Live:
+class Life:
 
     def __init__(self, x, y):
         (self.width, self.height) = LIFE_SIZE

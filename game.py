@@ -38,6 +38,7 @@ def handle_bullets(bullets):
 def handle_aliens(aliens, player):
     for alien in aliens:
         alien.move(player)
+        alien.update_angle(player)
         alien.draw(WIN)
 
 
@@ -45,7 +46,7 @@ def handle_lives(player, lives):
     lives.clear()  # empty the list from previous iteration
     x = WIDTH - LIFE_SIZE[0] - 10
     for i in range(player.lives):
-        lives.append(Live(x, 10))
+        lives.append(Life(x, 10))
         x -= LIFE_SIZE[0] + 2  # add 2 tyo width for space between icons
         lives[i].draw(WIN)  # call draw method of just created icon
 
