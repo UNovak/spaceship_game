@@ -1,13 +1,6 @@
 import pygame
 from objects import *
 
-# TODO:
-#
-# - window icon
-# - hit animation
-# - add sounds
-#
-
 # BUGS:
 #
 # - alien player collision accuracy
@@ -27,6 +20,15 @@ WHITE = (255, 255, 255)
 BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
 DIFFICULTY_SCALING = 0.0002
 
+# SOUNDS
+LASER_SOUND = pygame.mixer.Sound('Assets/Sounds/laser_shot.ogg')  # when bullet is shot
+LASER_SOUND.set_volume(0.1)  # adjust volume
+
+ALIEN_HIT = pygame.mixer.Sound('Assets/Sounds/explosion.wav')  # alien hit by bullet sound
+PLAYER_HIT = pygame.mixer.Sound('Assets/Sounds/player_hit.wav')  # player crashes with alien sound
+
+BACKGROUND_SOUND = pygame.mixer.Sound('Assets/Sounds/background_music.wav')  # plays on loop in background
+BACKGROUND_SOUND.set_volume(0.1)
 
 # bullet movement and termination on hitting screen edge
 def handle_bullets(bullets):
@@ -93,11 +95,13 @@ def update_score(player):
 def check_collisions(bullets, aliens, player):
     if pygame.sprite.groupcollide(bullets, aliens, True, True):  # if bullets and aliens collide remove them
         player.score += 1  # increment score if player scores a hit
+        pygame.mixer.Sound.play(ALIEN_HIT, 0, 1000)
     for alien in aliens:
         # look through all aliens if they are touching the player
         if pygame.sprite.collide_rect(player, alien):
             aliens.remove(alien)  # remove alien if it touches player
             player.lives -= 1  # player loses one life
+            PLAYER_HIT.play(0, 80)  # play sound effect
             if player.lives <= 0:  # end game if player lost all lives
                 player.isAlive = False
 
@@ -185,6 +189,7 @@ def main(first):
     difficulty = 1
     bullet_timer = 0
     run = True
+    BACKGROUND_SOUND.play(-1)  # starts playing the music
 
     # game loop
     while run:
@@ -203,6 +208,7 @@ def main(first):
                     # noinspection PyTypeChecker
                     bullet = Bullet(player)
                     bullets.add(bullet)  # create a new bullet
+                    LASER_SOUND.play(0, 150)
                     bullet_timer = 0  # reset timer
 
             if event.type == pygame.KEYDOWN:
