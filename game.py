@@ -7,7 +7,7 @@ from objects import *
 # - window icon
 # - hit animation
 # - add sounds
-# - limit shooting speed and amount of bullets
+# - fix aliens to chase player
 #
 
 pygame.init()
@@ -21,7 +21,8 @@ pygame.display.set_caption("Aliens game")
 FPS = 60
 WHITE = (255, 255, 255)
 BACKGROUND = pygame.transform.scale(pygame.image.load('Assets/Images/background.jpg'), (WIDTH, HEIGHT))
-MAX_BULLETS = 7
+DIFFICULTY_SCALING = 0.0001
+
 
 
 # bullet movement and termination on hitting screen edge
@@ -43,10 +44,10 @@ def handle_aliens(aliens):
 
 def handle_lives(player, lives):
     lives.clear()  # empty the list from previous iteration
-    x = WIDTH - LIVE_SIZE[0] - 10
+    x = WIDTH - LIFE_SIZE[0] - 10
     for i in range(player.lives):
         lives.append(Live(x, 10))
-        x -= LIVE_SIZE[0] + 2  # add 2 tyo width for space between icons
+        x -= LIFE_SIZE[0] + 2  # add 2 tyo width for space between icons
         lives[i].draw(WIN)  # call draw method of just created icon
 
 
@@ -59,6 +60,21 @@ def handle_ammo(bullets):
         ammo.append(Ammo(x, HEIGHT-AMMO_SIZE[1] - 10))
         x -= AMMO_SIZE[0] + 5
         ammo[i].draw(WIN)
+
+
+def player_move(player, pressed_keys):
+    # adjust player position
+    if pressed_keys[pg.K_w]:  # up
+        player.y -= PLAYER_SPEED
+    if pressed_keys[pg.K_s]:  # down
+        player.y += PLAYER_SPEED
+    if pressed_keys[pg.K_a]:  # left
+        player.x -= PLAYER_SPEED
+    if pressed_keys[pg.K_d]:  # right
+        player.x += PLAYER_SPEED
+
+    # function to update sync rect and player coordinates
+    player.update_rect()
 
 
 # displaying text during live game
@@ -120,11 +136,23 @@ def game_over(player):
 
     # restart instruction
     font3 = pygame.font.SysFont('sfnsmono', 20, bold=pygame.font.Font.bold)
-    text3 = font2.render('Press SPACE to play again', True, WHITE)
+    text3 = font3.render('Press SPACE to play again', True, WHITE)
     text3_x = WIDTH / 2 - text3.get_width() / 2
     text3_y = HEIGHT - text3.get_height() - 30
     WIN.blit(text3, (text3_x, text3_y))
     pygame.display.update()
+
+# #currently unused
+# def start_screen():
+#     WIN.blit(BACKGROUND, (0, 0))  # new background
+#
+#     font1 = pygame.font.SysFont('sfnsmono', 40, bold=pygame.font.Font.bold)
+#     text1 = font1.render('WELCOME TO ALIENS', True, WHITE)
+#     text1_x = WIDTH / 2 - text1.get_width() / 2
+#     text1_y = HEIGHT / 2 - text1.get_height() / 2 - WIDTH / 10
+#     WIN.blit(text1, (text1_x, text1_y))
+#
+#     pygame.display.update()
 
 
 def main():
@@ -139,6 +167,7 @@ def main():
     bullet_timer = 0
     run = True
 
+    # game loop
     while run:
         clock.tick(FPS)
 
@@ -155,15 +184,19 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pressed(3)  # get the state of all mouse buttons
-                if mouse[0] and len(bullets.sprites()) < MAX_BULLETS and bullet_timer >= 0.05:  # check if left mouse button\
+                if mouse[0] and len(bullets.sprites()) < MAX_BULLETS and bullet_timer >= 0.05:  # check if left mouse button
                     # noinspection PyTypeChecker
-                    bullets.add(Bullet(player))  # create a new bullet
+                    bullet = Bullet(player)
+                    bullets.add(bullet)  # create a new bullet
                     bullet_timer = 0  # reset timer
 
+        # player movement
+        pressed_keys = pygame.key.get_pressed()  # returns a list of all currently pressed keys
+        player_move(player, pressed_keys)
 
         # alien creation
-        spawn_timer += clock.get_rawtime() / 750
-        difficulty -= 0.0001
+        spawn_timer += clock.get_rawtime() / 1000
+        difficulty -= DIFFICULTY_SCALING
         if spawn_timer >= difficulty:
             # noinspection PyTypeChecker
             aliens.add(Alien(WIDTH, HEIGHT))  # spawn a new alien

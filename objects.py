@@ -5,19 +5,21 @@ import random
 # player variables
 PLAYER_WIDTH = 55
 PLAYER_HEIGHT = 55
+PLAYER_SPEED = 3
 
 # alien variables
 ALIEN_WIDTH = 30
 ALIEN_HEIGHT = 30
-ALIEN_SPEED = 1.5
+ALIEN_SPEED = 3.1
 
 # bullet variables
 BULLET_WIDTH = 10
 BULLET_HEIGHT = 5
 BULLET_SPEED = 6
+MAX_BULLETS = 7
 
 # icon size
-LIVE_SIZE = (20, 20)
+LIFE_SIZE = (20, 20)
 AMMO_SIZE = (10, 20)
 
 
@@ -38,6 +40,11 @@ class Player(pg.sprite.Sprite):
         angle_rad = math.atan2(mouse_y - self.y, mouse_x - self.x)
         # Convert the angle to degrees and adjust for the Pygame coordinate system
         self.angle = math.degrees(angle_rad) + 90
+
+    def update_rect(self):
+        # updates rectangle coordinates to stay consistent with player coordinates
+        self.rect.x = self.x
+        self.rect.y = self.y
 
     def draw(self, window):
         rotated_img = pg.transform.rotate(self.img, -self.angle)  # Rotate the image
@@ -75,8 +82,8 @@ class Alien(pg.sprite.Sprite):
         angle = math.radians(random.uniform(0, 360))
 
         # Calculate alien's initial x and y coordinates relative to the center of the screen
-        self.x = width/2 + math.cos(angle) * distance
-        self.y = height/2 + math.sin(angle) * distance
+        self.x = width / 2 + math.cos(angle) * distance
+        self.y = height / 2 + math.sin(angle) * distance
         self.angle = math.degrees(angle)
 
         # get image
@@ -93,11 +100,12 @@ class Alien(pg.sprite.Sprite):
 
 
 class Live:
+
     def __init__(self, x, y):
-        (self.width, self.height) = LIVE_SIZE
+        (self.width, self.height) = LIFE_SIZE
         self.x = x
         self.y = y
-        self.img = pg.transform.scale(pg.image.load('Assets/Images/life_icon.png'), LIVE_SIZE)
+        self.img = pg.transform.scale(pg.image.load('Assets/Images/life_icon.png'), LIFE_SIZE)
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
@@ -111,4 +119,3 @@ class Ammo:
 
     def draw(self, window):
         window.blit(self.img, (self.x, self.y))
-
